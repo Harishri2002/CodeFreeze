@@ -1,0 +1,85 @@
+{
+  "name": "read-only-mode",
+  "displayName": "Read-Only Mode",
+  "description": "Toggle read-only mode for files with visual indicators",
+  "version": "0.1.0",
+  "publisher": "your-publisher-name",
+  "engines": {
+    "vscode": "^1.60.0"
+  },
+  "categories": [
+    "Other"
+  ],
+  "activationEvents": [
+    "onStartupFinished"
+  ],
+  "main": "./out/extension.js",
+  "contributes": {
+    "commands": [
+      {
+        "command": "read-only-mode.toggle",
+        "title": "Toggle Read-Only Mode"
+      },
+      {
+        "command": "read-only-mode.showStatus",
+        "title": "Show Read-Only Status"
+      }
+    ],
+    "keybindings": [
+      {
+        "command": "read-only-mode.toggle",
+        "key": "ctrl+alt+l",
+        "mac": "cmd+alt+l",
+        "when": "editorTextFocus"
+      }
+    ],
+    "menus": {
+      "editor/context": [
+        {
+          "command": "read-only-mode.toggle",
+          "group": "1_modification"
+        }
+      ],
+      "commandPalette": [
+        {
+          "command": "read-only-mode.toggle"
+        },
+        {
+          "command": "read-only-mode.showStatus"
+        }
+      ]
+    }
+  },
+  "scripts": {
+    "vscode:prepublish": "npm run compile",
+    "compile": "tsc -p ./",
+    "lint": "eslint src --ext ts",
+    "watch": "tsc -watch -p ./",
+    "pretest": "npm run compile && npm run lint",
+    "test": "node ./out/test/runTest.js"
+  },
+  "devDependencies": {
+    "@types/glob": "^7.2.0",
+    "@types/mocha": "^9.1.1",
+    "@types/node": "16.x",
+    "@types/vscode": "^1.60.0",
+    "@typescript-eslint/eslint-plugin": "^5.31.0",
+    "@typescript-eslint/parser": "^5.31.0",
+    "@vscode/test-electron": "^2.1.5",
+    "eslint": "^8.20.0",
+    "glob": "^8.0.3",
+    "mocha": "^10.0.0",
+    "typescript": "^4.7.4"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/yourusername/read-only-mode.git"
+  },
+  "keywords": [
+    "read-only",
+    "lock",
+    "protection",
+    "edit",
+    "file"
+  ]
+}

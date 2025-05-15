@@ -1,0 +1,20 @@
+# Node.js
+node_modules/
+out/
+
+# TypeScript
+*.tsbuildinfo
+
+# VS Code
+.vscodeignore
+
+# Yarn or npm
+package-lock.json
+
+# Documentation
+*.md
+
+# Ignore compiled JavaScript and TypeScript map files
+*.js
+*.js.map
+*.ts.map

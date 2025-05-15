@@ -1,0 +1,61 @@
+{
+  "folders": [
+    {
+      "path": "."
+    }
+  ],
+  "settings": {
+    "typescript.tsc.autoDetect": "on",
+    "editor.formatOnSave": true,
+    "files.exclude": {
+      "out": false,
+      "node_modules": true
+    },
+    "search.exclude": {
+      "out": true,
+      "node_modules": true
+    }
+  },
+  "launch": {
+    "version": "0.2.0",
+    "configurations": [
+      {
+        "name": "Run Extension",
+        "type": "extensionHost",
+        "request": "launch",
+        "args": ["--extensionDevelopmentPath=${workspaceFolder}"],
+        "outFiles": ["${workspaceFolder}/out/**/*.js"],
+        "preLaunchTask": "${defaultBuildTask}"
+      },
+      {
+        "name": "Extension Tests",
+        "type": "extensionHost",
+        "request": "launch",
+        "args": [
+          "--extensionDevelopmentPath=${workspaceFolder}",
+          "--extensionTestsPath=${workspaceFolder}/out/test/suite/index"
+        ],
+        "outFiles": ["${workspaceFolder}/out/test/**/*.js"],
+        "preLaunchTask": "${defaultBuildTask}"
+      }
+    ]
+  },
+  "tasks": {
+    "version": "2.0.0",
+    "tasks": [
+      {
+        "type": "npm",
+        "script": "watch",
+        "problemMatcher": "$tsc-watch",
+        "isBackground": true,
+        "presentation": {
+          "reveal": "never"
+        },
+        "group": {
+          "kind": "build",
+          "isDefault": true
+        }
+      }
+    ]
+  }
+}
