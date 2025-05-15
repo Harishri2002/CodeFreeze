@@ -4,7 +4,14 @@
 import * as vscode from 'vscode';
 
 export class DecorationManager {
+    // Instead of using specific colors, we'll use theme color identifiers
+    // that will adapt to the user's current theme
     private static readonly decorationType = vscode.window.createTextEditorDecorationType({
+        // Don't use background color for the entire document
+        // This prevents the white background issue
+        opacity: '1',
+        border: '1px solid var(--vscode-editorWarning-foreground)',
+        borderStyle: 'solid none none none', // Top border only
         isWholeLine: true,
         rangeBehavior: vscode.DecorationRangeBehavior.ClosedClosed
     });
@@ -12,11 +19,10 @@ export class DecorationManager {
     private static readonly headerDecorationType = vscode.window.createTextEditorDecorationType({
         after: {
             contentText: ' READ-ONLY MODE ',
-            color: '#ffffff',
-            backgroundColor: '#cc0000',
+            color: 'var(--vscode-editor-foreground)',
+            backgroundColor: 'var(--vscode-editorWarning-foreground)',
             margin: '0 0 0 2em',
-            border: '1px solid #cc0000',
-            // borderRadius: '3px'
+            border: '1px solid var(--vscode-editorWarning-foreground)',
         }
     });
     
@@ -36,7 +42,8 @@ export class DecorationManager {
             
             editor.setDecorations(this.headerDecorationType, [headerRange]);
             
-            // Add subtle background to entire document
+            // Instead of applying a background to the entire document,
+            // let's add a top border to indicate read-only status
             const documentRange = new vscode.Range(
                 0, 0,
                 editor.document.lineCount - 1,

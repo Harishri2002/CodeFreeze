@@ -80,7 +80,7 @@ export class ReadOnlyManager {
             vscode.workspace.getConfiguration().update(
                 'workbench.colorCustomizations',
                 {
-                    'editor.background': isReadOnly ? '#f8f8f8' : originalColor
+                    'editor.background': isReadOnly ? originalColor : originalColor
                 },
                 vscode.ConfigurationTarget.Workspace
             );

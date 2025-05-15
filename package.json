@@ -1,9 +1,9 @@
 {
-  "name": "read-only-mode",
-  "displayName": "Read-Only Mode",
+  "name": "CodeFreeze",
+  "displayName": "CodeFreeze",
   "description": "Toggle read-only mode for files with visual indicators",
   "version": "0.1.0",
-  "publisher": "your-publisher-name",
+  "publisher": "Harishri B R",
   "engines": {
     "vscode": "^1.60.0"
   },
@@ -17,17 +17,17 @@
   "contributes": {
     "commands": [
       {
-        "command": "read-only-mode.toggle",
+        "command": "CodeFreeze.toggle",
         "title": "Toggle Read-Only Mode"
       },
       {
-        "command": "read-only-mode.showStatus",
+        "command": "CodeFreeze.showStatus",
         "title": "Show Read-Only Status"
       }
     ],
     "keybindings": [
       {
-        "command": "read-only-mode.toggle",
+        "command": "CodeFreeze.toggle",
         "key": "ctrl+alt+l",
         "mac": "cmd+alt+l",
         "when": "editorTextFocus"
@@ -36,16 +36,16 @@
     "menus": {
       "editor/context": [
         {
-          "command": "read-only-mode.toggle",
+          "command": "CodeFreeze.toggle",
           "group": "1_modification"
         }
       ],
       "commandPalette": [
         {
-          "command": "read-only-mode.toggle"
+          "command": "CodeFreeze.toggle"
         },
         {
-          "command": "read-only-mode.showStatus"
+          "command": "CodeFreeze.showStatus"
         }
       ]
     }
@@ -73,7 +73,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/yourusername/read-only-mode.git"
+    "url": "https://github.com/yourusername/CodeFreeze.git"
   },
   "keywords": [
     "read-only",

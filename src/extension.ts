@@ -13,7 +13,7 @@ export function activate(context: vscode.ExtensionContext) {
     const statusBarManager = new StatusBarManager(context);
     
     // Register commands
-    const toggleCommand = vscode.commands.registerCommand('read-only-mode.toggle', () => {
+    const toggleCommand = vscode.commands.registerCommand('CodeFreeze.toggle', () => {
         const editor = vscode.window.activeTextEditor;
         if (!editor) {
             vscode.window.showInformationMessage('No active editor found');
@@ -61,7 +61,7 @@ export function activate(context: vscode.ExtensionContext) {
     });
 
     // Add command palette integration
-    const showCommandPalette = vscode.commands.registerCommand('read-only-mode.showStatus', () => {
+    const showCommandPalette = vscode.commands.registerCommand('CodeFreeze.showStatus', () => {
         const editor = vscode.window.activeTextEditor;
         if (editor) {
             const isReadOnly = readOnlyManager.isReadOnly(editor.document.uri);

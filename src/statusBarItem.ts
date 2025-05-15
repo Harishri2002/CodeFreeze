@@ -10,7 +10,7 @@ export class StatusBarManager {
             1000 // High priority for visibility
         );
         
-        this.statusBarItem.command = 'read-only-mode.toggle';
+        this.statusBarItem.command = 'CodeFreeze.toggle';
         this.statusBarItem.tooltip = 'Toggle Read-Only Mode';
         this.statusBarItem.hide();
         
