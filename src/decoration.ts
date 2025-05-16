@@ -1,17 +1,10 @@
-/**
- * decoration.ts - Handle editor decorations for read-only files
- */
 import * as vscode from 'vscode';
 
 export class DecorationManager {
     // Instead of using specific colors, we'll use theme color identifiers
     // that will adapt to the user's current theme
     private static readonly decorationType = vscode.window.createTextEditorDecorationType({
-        // Don't use background color for the entire document
-        // This prevents the white background issue
         opacity: '1',
-        border: '1px solid var(--vscode-editorWarning-foreground)',
-        borderStyle: 'solid none none none', // Top border only
         isWholeLine: true,
         rangeBehavior: vscode.DecorationRangeBehavior.ClosedClosed
     });
@@ -19,11 +12,16 @@ export class DecorationManager {
     private static readonly headerDecorationType = vscode.window.createTextEditorDecorationType({
         after: {
             contentText: ' READ-ONLY MODE ',
-            color: 'var(--vscode-editor-foreground)',
-            backgroundColor: 'var(--vscode-editorWarning-foreground)',
             margin: '0 0 0 2em',
             border: '1px solid var(--vscode-editorWarning-foreground)',
         }
+    });
+
+    private static readonly documentDecorationType = vscode.window.createTextEditorDecorationType({
+        opacity: '0.7', // Makes the text appear lighter
+        color: 'var(--vscode-editor-foreground)',
+        isWholeLine: true,
+        rangeBehavior: vscode.DecorationRangeBehavior.ClosedClosed
     });
     
     /**
@@ -33,7 +31,6 @@ export class DecorationManager {
      */
     public static applyDecorations(editor: vscode.TextEditor, isReadOnly: boolean): void {
         if (isReadOnly) {
-            // Apply header decoration to the top of the document
             const firstLine = editor.document.lineAt(0);
             const headerRange = new vscode.Range(
                 firstLine.range.start,
@@ -41,9 +38,7 @@ export class DecorationManager {
             );
             
             editor.setDecorations(this.headerDecorationType, [headerRange]);
-            
-            // Instead of applying a background to the entire document,
-            // let's add a top border to indicate read-only status
+        
             const documentRange = new vscode.Range(
                 0, 0,
                 editor.document.lineCount - 1,
