@@ -3,7 +3,7 @@
   "displayName": "CodeFreeze",
   "description": "Toggle read-only mode for files with visual indicators",
   "version": "0.1.0",
-  "publisher": "Harishri B R",
+  "publisher": "Harishri",
   "engines": {
     "vscode": "^1.60.0"
   },
