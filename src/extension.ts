@@ -23,6 +23,9 @@ export function activate(context: vscode.ExtensionContext) {
         const document = editor.document;
         const isReadOnly = readOnlyManager.toggleReadOnly(document.uri);
         
+        // Save state immediately after toggling
+        readOnlyManager.saveReadOnlyState();
+        
         // Update status bar
         statusBarManager.updateStatusBar(isReadOnly);
         
@@ -87,6 +90,22 @@ export function activate(context: vscode.ExtensionContext) {
         statusBarManager.updateStatusBar(isReadOnly);
         DecorationManager.applyDecorations(activeEditor, isReadOnly);
     }
+
+    // When new document is opened, check if it should be read-only
+    context.subscriptions.push(
+        vscode.workspace.onDidOpenTextDocument(document => {
+            const isReadOnly = readOnlyManager.isReadOnly(document.uri);
+            if (isReadOnly) {
+                // Find the editor for this document
+                vscode.window.visibleTextEditors.forEach(editor => {
+                    if (editor.document.uri.toString() === document.uri.toString()) {
+                        DecorationManager.applyDecorations(editor, true);
+                        statusBarManager.updateStatusBar(true);
+                    }
+                });
+            }
+        })
+    );
 }
 
 export function deactivate() {

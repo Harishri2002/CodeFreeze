@@ -1,5 +1,6 @@
 import * as vscode from 'vscode';
 import * as path from 'path';
+import { DecorationManager } from './decoration';
 
 export class ReadOnlyManager {
     private context: vscode.ExtensionContext;
@@ -14,6 +15,9 @@ export class ReadOnlyManager {
         context.subscriptions.push(
             vscode.workspace.onDidChangeTextDocument(e => this.handleTextDocumentChange(e))
         );
+        
+        // Apply saved read-only state to all open editors when extension starts
+        this.restoreReadOnlyState();
     }
 
     /**
@@ -26,15 +30,13 @@ export class ReadOnlyManager {
         
         if (this.readOnlyDocuments.has(key)) {
             this.readOnlyDocuments.delete(key);
-            this.applyReadOnlyDecorations(uri, false);
             return false;
         } else {
             this.readOnlyDocuments.add(key);
-            this.applyReadOnlyDecorations(uri, true);
             return true;
         }
         
-        // Save state
+        // Save state after changes
         this.saveReadOnlyState();
     }
 
@@ -65,29 +67,6 @@ export class ReadOnlyManager {
     }
 
     /**
-     * Applies decorations to indicate read-only status
-     * @param uri Document URI
-     * @param isReadOnly Whether the document is read-only
-     */
-    private applyReadOnlyDecorations(uri: vscode.Uri, isReadOnly: boolean): void {
-        const editor = vscode.window.activeTextEditor;
-        
-        if (editor && editor.document.uri.toString() === uri.toString()) {
-            const editorConfig = vscode.workspace.getConfiguration('editor');
-            const originalColor = editorConfig.get<string>('background');
-            
-            // Apply a slightly different background color for read-only files
-            vscode.workspace.getConfiguration().update(
-                'workbench.colorCustomizations',
-                {
-                    'editor.background': isReadOnly ? originalColor : originalColor
-                },
-                vscode.ConfigurationTarget.Workspace
-            );
-        }
-    }
-
-    /**
      * Converts a URI to a string key for storage
      * @param uri Document URI
      * @returns String key
@@ -99,7 +78,7 @@ export class ReadOnlyManager {
     /**
      * Saves the read-only state to persistent storage
      */
-    private saveReadOnlyState(): void {
+    public saveReadOnlyState(): void {
         this.context.globalState.update(
             this.storageKey,
             Array.from(this.readOnlyDocuments)
@@ -112,5 +91,18 @@ export class ReadOnlyManager {
      */
     private loadReadOnlyState(): string[] {
         return this.context.globalState.get<string[]>(this.storageKey) || [];
+    }
+
+    /**
+     * Restores read-only state for all open editors from saved state
+     */
+    private restoreReadOnlyState(): void {
+        // Apply to all currently open editors
+        vscode.window.visibleTextEditors.forEach(editor => {
+            const isReadOnly = this.isReadOnly(editor.document.uri);
+            if (isReadOnly) {
+                DecorationManager.applyDecorations(editor, true);
+            }
+        });
     }
 }

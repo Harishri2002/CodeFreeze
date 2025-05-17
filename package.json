@@ -3,7 +3,7 @@
   "displayName": "CodeFreeze",
   "description": "Toggle read-only mode for files with visual indicators",
   "version": "0.1.0",
-  "icon": "src/assets/icon.jpg",
+  "icon": "assets/icon.jpg",
   "publisher": "HarishriBR",
   "engines": {
     "vscode": "^1.60.0"
@@ -19,11 +19,11 @@
     "commands": [
       {
         "command": "CodeFreeze.toggle",
-        "title": "Toggle Read-Only Mode"
+        "title": "CodeFreeze: Toggle Read-Only Mode"
       },
       {
         "command": "CodeFreeze.showStatus",
-        "title": "Show Read-Only Status"
+        "title": "CodeFreeze: Show Read-Only Status"
       }
     ],
     "keybindings": [
@@ -43,10 +43,12 @@
       ],
       "commandPalette": [
         {
-          "command": "CodeFreeze.toggle"
+          "command": "CodeFreeze.toggle",
+          "when": "editorIsOpen"
         },
         {
-          "command": "CodeFreeze.showStatus"
+          "command": "CodeFreeze.showStatus",
+          "when": "editorIsOpen"
         }
       ]
     }
