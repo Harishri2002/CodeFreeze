@@ -2,7 +2,7 @@
 
 > A lightweight and efficient Visual Studio Code extension that enables toggling read-only mode for any file using a keyboard shortcut, context menu, or Command Palette. Protect your files from accidental edits with clear visual indicators and persistent state across sessions.
 
-![Demo]
+## Demo
 https://github.com/user-attachments/assets/9d6a934d-0e46-47b5-96a8-cb093ad7bf69
 
 ## ✨ Features
