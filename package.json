@@ -2,8 +2,8 @@
   "name": "CodeFreeze",
   "displayName": "CodeFreeze",
   "description": "Toggle read-only mode for files with visual indicators",
-  "version": "0.1.1",
-  "icon": "src/assets/icon.jpg",
+  "version": "0.1.2",
+  "icon": "assets/icon.jpg",
   "publisher": "HarishriBR",
   "engines": {
     "vscode": "^1.60.0"

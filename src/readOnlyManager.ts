@@ -6,18 +6,84 @@ export class ReadOnlyManager {
     private context: vscode.ExtensionContext;
     private readOnlyDocuments: Set<string>;
     private readonly storageKey = 'readOnlyDocuments';
+    private isUndoing: boolean = false;
+    private documentSnapshots: Map<string, string> = new Map();
 
     constructor(context: vscode.ExtensionContext) {
         this.context = context;
         this.readOnlyDocuments = new Set<string>(this.loadReadOnlyState());
         
-        // Listen for text edit attempts on read-only files
+        // Register event handlers
         context.subscriptions.push(
-            vscode.workspace.onDidChangeTextDocument(e => this.handleTextDocumentChange(e))
+            // Intercept text changes in read-only documents
+            vscode.workspace.onDidChangeTextDocument(e => {
+                if (!this.isUndoing && this.isReadOnly(e.document.uri) && e.contentChanges.length > 0) {
+                    // Flag that we're handling an edit so we don't create an infinite loop
+                    this.isUndoing = true;
+                    
+                    // Get a snapshot of the document content if we have one
+                    this.restoreDocumentContent(e.document).then(() => {
+                        // Show warning
+                        vscode.window.showWarningMessage(
+                            `Cannot edit ${path.basename(e.document.fileName)} - file is in Read-Only mode`
+                        );
+                        
+                        // Reset flag
+                        this.isUndoing = false;
+                    });
+                }
+            }),
+            
+            // Block save operations on read-only documents
+            vscode.workspace.onWillSaveTextDocument(e => {
+                if (this.isReadOnly(e.document.uri)) {
+                    // Cancel the save operation
+                    e.waitUntil(Promise.resolve([]));
+                    
+                    vscode.window.showWarningMessage(
+                        `Cannot save ${path.basename(e.document.fileName)} - file is in Read-Only mode`
+                    );
+                }
+            })
         );
         
         // Apply saved read-only state to all open editors when extension starts
         this.restoreReadOnlyState();
+    }
+
+    /**
+     * Restore document content using stored snapshot
+     * @param document Document to restore
+     */
+    private async restoreDocumentContent(document: vscode.TextDocument): Promise<void> {
+        const key = this.getDocumentKey(document.uri);
+        const snapshot = this.documentSnapshots.get(key);
+        
+        if (snapshot !== undefined) {
+            // Try to find an editor for this document
+            const editor = vscode.window.visibleTextEditors.find(
+                e => e.document.uri.toString() === document.uri.toString()
+            );
+            
+            if (editor) {
+                // Replace the entire document content with the snapshot
+                const fullRange = new vscode.Range(
+                    0, 0,
+                    document.lineCount - 1,
+                    document.lineAt(document.lineCount - 1).text.length
+                );
+                
+                await editor.edit(editBuilder => {
+                    editBuilder.replace(fullRange, snapshot);
+                });
+            } else {
+                // Fallback to document reloading
+                await vscode.commands.executeCommand('workbench.action.files.revert');
+            }
+        } else {
+            // No snapshot available, use standard undo
+            await vscode.commands.executeCommand('undo');
+        }
     }
 
     /**
@@ -27,17 +93,36 @@ export class ReadOnlyManager {
      */
     public toggleReadOnly(uri: vscode.Uri): boolean {
         const key = this.getDocumentKey(uri);
+        const document = this.findDocumentByUri(uri);
         
         if (this.readOnlyDocuments.has(key)) {
+            // Make document editable
             this.readOnlyDocuments.delete(key);
+            // Remove the snapshot
+            this.documentSnapshots.delete(key);
             return false;
         } else {
+            // Make document read-only
             this.readOnlyDocuments.add(key);
+            
+            // Store a snapshot of the current document content
+            if (document) {
+                this.documentSnapshots.set(key, document.getText());
+            }
+            
             return true;
         }
-        
-        // Save state after changes
-        this.saveReadOnlyState();
+    }
+
+    /**
+     * Find document by URI
+     * @param uri Document URI
+     * @returns TextDocument or undefined
+     */
+    private findDocumentByUri(uri: vscode.Uri): vscode.TextDocument | undefined {
+        return vscode.workspace.textDocuments.find(
+            doc => doc.uri.toString() === uri.toString()
+        );
     }
 
     /**
@@ -47,23 +132,6 @@ export class ReadOnlyManager {
      */
     public isReadOnly(uri: vscode.Uri): boolean {
         return this.readOnlyDocuments.has(this.getDocumentKey(uri));
-    }
-
-    /**
-     * Handles text document change events
-     * @param event Text document change event
-     */
-    private handleTextDocumentChange(event: vscode.TextDocumentChangeEvent): void {
-        const uri = event.document.uri;
-        
-        if (this.isReadOnly(uri) && event.contentChanges.length > 0) {
-            // If changes were made to a read-only document, undo them
-            vscode.commands.executeCommand('undo').then(() => {
-                vscode.window.showWarningMessage(
-                    `Cannot edit ${path.basename(uri.fsPath)} - file is in Read-Only mode`
-                );
-            });
-        }
     }
 
     /**
@@ -99,8 +167,17 @@ export class ReadOnlyManager {
     private restoreReadOnlyState(): void {
         // Apply to all currently open editors
         vscode.window.visibleTextEditors.forEach(editor => {
-            const isReadOnly = this.isReadOnly(editor.document.uri);
+            const uri = editor.document.uri;
+            const isReadOnly = this.isReadOnly(uri);
+            
             if (isReadOnly) {
+                // Store a snapshot of the current document content
+                this.documentSnapshots.set(
+                    this.getDocumentKey(uri),
+                    editor.document.getText()
+                );
+                
+                // Apply decorations
                 DecorationManager.applyDecorations(editor, true);
             }
         });

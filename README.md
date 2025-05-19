@@ -32,8 +32,8 @@ code --install-extension CodeFreeze
 Open any file in VS Code. Toggle CodeFreeze:Read Only mode using one of these methods:
 
 - **Keyboard Shortcut**: Press `Ctrl+Alt+F` (Windows/Linux) or `Cmd+Alt+F` (macOS)
-- **Command Palette**: Press `Ctrl+Shift+P`, then type `CodeFreeze:Toggle Read-Only Mode`
-- **Context Menu**: Right-click the file in the editor and select `CodeFreeze:Toggle Read-Only Mode`
+- **Command Palette**: Press `Ctrl+Shift+P`, then type `Toggle Read-Only Mode`
+- **Context Menu**: Right-click the file in the editor and select `Toggle Read-Only Mode`
 
 When locked, the file cannot be edited or saved, and a status bar indicator confirms the mode.
 
@@ -54,6 +54,10 @@ You can customize the keyboard shortcut in VS Code's Keyboard Shortcuts settings
 ### 0.1.0
 - Initial release of the CodeFreeze extension
 - Features include keyboard shortcut, Command Palette, context menu, and status bar integration
+
+### 0.1.0
+- Read-only mode edit bug fixed
+
 
 ## 👥 Contributing
 
